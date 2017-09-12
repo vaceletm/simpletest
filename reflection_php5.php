@@ -399,9 +399,15 @@ class SimpleReflection
      */
     protected function isOptional($parameter)
     {
-        if (method_exists($parameter, 'isOptional')) {
-            return $parameter->isOptional();
-        }
-        return false;
+        // In previous versions of simple test mock objects where generated
+        // without any arguments, eg
+        // function foo(Bar $stuff, array $misc) would result into
+        // function foo()
+        // by forcing all arguments to be optional we lower the test strictness
+        // but we also save us some time to convert the ~5000 unit tests that
+        // rely on that.
+        // code generated is now like
+        // function foo(Bar $stuff = null, array $misc = null)
+        return true;
     }
 }
